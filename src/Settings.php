@@ -1,6 +1,6 @@
 <?php
 
-namespace Crgeary\JAMstackDeployments;
+namespace Theroyals\JAMstackWebhook;
 
 class Settings
 {
@@ -21,24 +21,34 @@ class Settings
      */
     public static function register()
     {
-        $key = CRGEARY_JAMSTACK_DEPLOYMENTS_OPTIONS_KEY;
+        $key = THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY;
 
         register_setting($key, $key, [__CLASS__, 'sanitize']);
         add_settings_section('general', 'General', '__return_empty_string', $key);
-        
+
         // ...
 
-        $option = jamstack_deployments_get_options();
+        $option = jamstack_webhook_get_options();
 
-        add_settings_field('webhook_url', 'Webhook URL', ['Crgeary\JAMstackDeployments\Field', 'url'], $key, 'general', [
+        add_settings_field('webhook_url', 'Webhook URL', ['Theroyals\JAMstackWebhook\Field', 'input'], $key, 'general', [
             'name' => "{$key}[webhook_url]",
-            'value' => jamstack_deployments_get_webhook_url(),
-            'description' => 'Your Webhook URL. See <a href="https://www.netlify.com/docs/webhooks/" target="_blank" rel="noopener noreferrer">Netlify docs</a>.'
+            'value' => jamstack_webhook_get_webhook_url(),
+            'description' => 'Your webhook URL. This will be static if the "WP_JAMSTACK_WEBHOOK_URL" environment variable is set.',
+            'disabled' => isset($_SERVER['WP_JAMSTACK_WEBHOOK_URL']),
+            'type' => 'url'
         ]);
 
-        add_settings_field('webhook_method', 'Webhook Method', ['Crgeary\JAMstackDeployments\Field', 'select'], $key, 'general', [
+        add_settings_field('webhook_secret_key', 'Webhook Secret Key', ['Theroyals\JAMstackWebhook\Field', 'input'], $key, 'general', [
+            'name' => "{$key}[webhook_secret_key]",
+            'value' => jamstack_webhook_get_webhook_key(),
+            'description' => '(Optional) A secret key to send with your webhook POST. This will be static if the "WP_JAMSTACK_WEBHOOK_KEY" environment variable is set.',
+            'disabled' => isset($_SERVER['WP_JAMSTACK_WEBHOOK_KEY']),
+            'type' => 'password'
+        ]);
+
+        add_settings_field('webhook_method', 'Webhook Method', ['Theroyals\JAMstackWebhook\Field', 'select'], $key, 'general', [
             'name' => "{$key}[webhook_method]",
-            'value' => jamstack_deployments_get_webhook_method(),
+            'value' => jamstack_webhook_get_webhook_method(),
             'choices' => [
                 'post' => 'POST',
                 'get' => 'GET'
@@ -47,13 +57,7 @@ class Settings
             'description' => 'Set either GET or POST for the webhook request. Defaults to POST.'
         ]);
 
-        add_settings_field('netlify_badge_url', 'Netlify Badge URL', ['Crgeary\JAMstackDeployments\Field', 'url'], $key, 'general', [
-            'name' => "{$key}[netlify_badge_url]",
-            'value' => isset($option['netlify_badge_url']) ? $option['netlify_badge_url'] : '',
-            'description' => 'Your Badge URL. See <a href="https://www.netlify.com/docs/continuous-deployment/" target="_blank" rel="noopener noreferrer">Netlify docs</a>.'
-        ]);
-
-        add_settings_field('webhook_post_types', 'Post Types', ['Crgeary\JAMstackDeployments\Field', 'checkboxes'], $key, 'general', [
+        add_settings_field('webhook_post_types', 'Post Types', ['Theroyals\JAMstackWebhook\Field', 'checkboxes'], $key, 'general', [
             'name' => "{$key}[webhook_post_types]",
             'value' => isset($option['webhook_post_types']) ? $option['webhook_post_types'] : [],
             'choices' => self::getPostTypes(),
@@ -61,7 +65,7 @@ class Settings
             'legend' => 'Post Types'
         ]);
 
-        add_settings_field('webhook_taxonomies', 'Taxonomies', ['Crgeary\JAMstackDeployments\Field', 'checkboxes'], $key, 'general', [
+        add_settings_field('webhook_taxonomies', 'Taxonomies', ['Theroyals\JAMstackWebhook\Field', 'checkboxes'], $key, 'general', [
             'name' => "{$key}[webhook_taxonomies]",
             'value' => isset($option['webhook_taxonomies']) ? $option['webhook_taxonomies'] : [],
             'choices' => self::getTaxonomies(),

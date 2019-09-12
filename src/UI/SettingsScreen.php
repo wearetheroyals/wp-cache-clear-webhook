@@ -1,6 +1,6 @@
 <?php
 
-namespace Crgeary\JAMstackDeployments\UI;
+namespace Theroyals\JAMstackWebhook\UI;
 
 class SettingsScreen
 {
@@ -22,10 +22,10 @@ class SettingsScreen
     public static function addMenu()
     {
         add_options_page(
-            'JAMstack Deployments (Settings)',
-            'Deployments',
+            'JAMstack Webhooks (Settings)',
+            'JAMstack Webhook',
             'manage_options',
-            'wp-jamstack-deployments-settings',
+            'wp-jamstack-webhook-settings',
             [__CLASS__, 'renderPage']
         );
     }
@@ -40,17 +40,17 @@ class SettingsScreen
         ?><div class="wrap">
 
             <h2><?= get_admin_page_title(); ?></h2>
-            
+
             <form method="post" action="<?= esc_url(admin_url('options.php')); ?>">
                 <?php
 
-                settings_fields(CRGEARY_JAMSTACK_DEPLOYMENTS_OPTIONS_KEY);
-                do_settings_sections(CRGEARY_JAMSTACK_DEPLOYMENTS_OPTIONS_KEY);
+                settings_fields(THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY);
+                do_settings_sections(THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY);
 
                 submit_button('Save Settings', 'primary', 'submit', false);
 
                 $uri = wp_nonce_url(
-                    admin_url('admin.php?page=wp-jamstack-deployments-settings&action=jamstack-deployment-trigger'),
+                    admin_url('admin.php?page=wp-jamstack-webhook-settings&action=jamstack-deployment-trigger'),
                     'crgeary_jamstack_deployment_trigger',
                     'crgeary_jamstack_deployment_trigger'
                 );

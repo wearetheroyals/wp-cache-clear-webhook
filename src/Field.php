@@ -1,19 +1,19 @@
 <?php
 
-namespace Crgeary\JAMstackDeployments;
+namespace Theroyals\JAMstackWebhook;
 
 class Field
 {
     /**
-     * Render an input[type=url] field
+     * Render an input field
      *
      * @param array $args
      * @return void
      */
-    public static function url($args = [])
+    public static function input($args = [])
     {
         ?><div>
-            <input type="url" class="regular-text" name="<?= esc_attr($args['name']); ?>" value="<?= esc_url($args['value']); ?>">
+            <input autocomplete="off" type="<?= isset($args['type']) ? $args['type'] : 'text' ?>" class="regular-text" name="<?= esc_attr($args['name']); ?>" <?= isset($args['disabled']) && $args['disabled'] == true ? 'disabled' : '' ?> value="<?= isset($args['type']) && $args['type'] == "url" ? esc_url($args['value']) : $args['value']; ?>">
             <?= !empty($args['description']) ? "<p class=\"description\">{$args['description']}</p>" : ''; ?>
         </div><?php
     }
@@ -43,7 +43,7 @@ class Field
      * @return void
      */
     public static function checkboxes($args = [])
-    {   
+    {
         $args['value'] = is_array($args['value']) ? $args['value'] : [$args['value']];
 
         ?><fieldset>

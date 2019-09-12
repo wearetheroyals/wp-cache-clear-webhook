@@ -1,23 +1,23 @@
 <?php
 
-namespace Crgeary\JAMstackDeployments;
+namespace Theroyals\JAMstackWebhook;
 
-use Crgeary\JAMstackDeployments\UI\SettingsScreen;
-use Crgeary\JAMstackDeployments\WebhookTrigger;
-use Crgeary\JAMstackDeployments\Settings;
+use Theroyals\JAMstackWebhook\UI\SettingsScreen;
+use Theroyals\JAMstackWebhook\WebhookTrigger;
+use Theroyals\JAMstackWebhook\Settings;
 
 class App
 {
     /**
      * Singleton instance
-     * 
+     *
      * @var null|App
      */
     protected static $instance = null;
 
     /**
      * Create a new singleton instance
-     * 
+     *
      * @return App
      */
     public static function instance()
@@ -31,7 +31,7 @@ class App
 
     /**
      * Bootstrap the plugin
-     * 
+     *
      * @return void
      */
     protected function __construct()
@@ -48,7 +48,7 @@ class App
      */
     protected function constants()
     {
-        define('CRGEARY_JAMSTACK_DEPLOYMENTS_OPTIONS_KEY', 'wp_jamstack_deployments');
+        define('THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY', 'wp_jamstack_webhook');
     }
 
     /**
@@ -58,13 +58,13 @@ class App
      */
     protected function includes()
     {
-        require_once (CRGEARY_JAMSTACK_DEPLOYMENTS_PATH.'/src/UI/SettingsScreen.php');
+        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/UI/SettingsScreen.php');
 
-        require_once (CRGEARY_JAMSTACK_DEPLOYMENTS_PATH.'/src/Settings.php');
-        require_once (CRGEARY_JAMSTACK_DEPLOYMENTS_PATH.'/src/WebhookTrigger.php');
-        require_once (CRGEARY_JAMSTACK_DEPLOYMENTS_PATH.'/src/Field.php');
+        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/Settings.php');
+        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/WebhookTrigger.php');
+        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/Field.php');
 
-        require_once (CRGEARY_JAMSTACK_DEPLOYMENTS_PATH.'/src/functions.php');
+        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/functions.php');
     }
 
     /**
@@ -74,8 +74,8 @@ class App
      */
     protected function hooks()
     {
-        register_activation_hook(CRGEARY_JAMSTACK_DEPLOYMENTS_FILE, [$this, 'activation']);
-        register_deactivation_hook(CRGEARY_JAMSTACK_DEPLOYMENTS_FILE, [$this, 'deactivation']);
+        register_activation_hook(THEROYALS_JAMSTACK_WEBHOOK_FILE, [$this, 'activation']);
+        register_deactivation_hook(THEROYALS_JAMSTACK_WEBHOOK_FILE, [$this, 'deactivation']);
 
         SettingsScreen::init();
         Settings::init();
@@ -89,7 +89,7 @@ class App
      */
     public function activation()
     {
-        
+
     }
 
     /**
