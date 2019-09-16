@@ -1,6 +1,6 @@
 <?php
 
-namespace Theroyals\JAMstackWebhook\UI;
+namespace Theroyals\CacheClearWebhook\UI;
 
 class SettingsScreen
 {
@@ -22,10 +22,10 @@ class SettingsScreen
     public static function addMenu()
     {
         add_options_page(
-            'JAMstack Webhooks (Settings)',
-            'JAMstack Webhook',
+            'Cache Clear Webhooks (Settings)',
+            'Cache Clear Webhook',
             'manage_options',
-            'wp-jamstack-webhook-settings',
+            'wp-cache-clear-webhook-settings',
             [__CLASS__, 'renderPage']
         );
     }
@@ -44,15 +44,15 @@ class SettingsScreen
             <form method="post" action="<?= esc_url(admin_url('options.php')); ?>">
                 <?php
 
-                settings_fields(THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY);
-                do_settings_sections(THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY);
+                settings_fields(THEROYALS_CACHE_CLEAR_WEBHOOK_OPTIONS_KEY);
+                do_settings_sections(THEROYALS_CACHE_CLEAR_WEBHOOK_OPTIONS_KEY);
 
                 submit_button('Save Settings', 'primary', 'submit', false);
 
                 $uri = wp_nonce_url(
-                    admin_url('admin.php?page=wp-jamstack-webhook-settings&action=jamstack-deployment-trigger'),
-                    'crgeary_jamstack_deployment_trigger',
-                    'crgeary_jamstack_deployment_trigger'
+                    admin_url('admin.php?page=wp-cache-clear-webhook-settings&action=cache-clear-webhook'),
+                    'theroyals_cache_clear_webhook',
+                    'theroyals_cache_clear_webhook'
                 );
 
                 ?>

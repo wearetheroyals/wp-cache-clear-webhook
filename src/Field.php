@@ -1,6 +1,6 @@
 <?php
 
-namespace Theroyals\JAMstackWebhook;
+namespace Theroyals\CacheClearWebhook;
 
 class Field
 {

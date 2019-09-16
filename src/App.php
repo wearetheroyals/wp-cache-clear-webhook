@@ -1,10 +1,10 @@
 <?php
 
-namespace Theroyals\JAMstackWebhook;
+namespace Theroyals\CacheClearWebhook;
 
-use Theroyals\JAMstackWebhook\UI\SettingsScreen;
-use Theroyals\JAMstackWebhook\WebhookTrigger;
-use Theroyals\JAMstackWebhook\Settings;
+use Theroyals\CacheClearWebhook\UI\SettingsScreen;
+use Theroyals\CacheClearWebhook\WebhookTrigger;
+use Theroyals\CacheClearWebhook\Settings;
 
 class App
 {
@@ -48,7 +48,7 @@ class App
      */
     protected function constants()
     {
-        define('THEROYALS_JAMSTACK_WEBHOOK_OPTIONS_KEY', 'wp_jamstack_webhook');
+        define('THEROYALS_CACHE_CLEAR_WEBHOOK_OPTIONS_KEY', 'wp_cache_clear_webhook');
     }
 
     /**
@@ -58,13 +58,13 @@ class App
      */
     protected function includes()
     {
-        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/UI/SettingsScreen.php');
+        require_once (THEROYALS_CACHE_CLEAR_WEBHOOK_PATH.'/src/UI/SettingsScreen.php');
 
-        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/Settings.php');
-        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/WebhookTrigger.php');
-        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/Field.php');
+        require_once (THEROYALS_CACHE_CLEAR_WEBHOOK_PATH.'/src/Settings.php');
+        require_once (THEROYALS_CACHE_CLEAR_WEBHOOK_PATH.'/src/WebhookTrigger.php');
+        require_once (THEROYALS_CACHE_CLEAR_WEBHOOK_PATH.'/src/Field.php');
 
-        require_once (THEROYALS_JAMSTACK_WEBHOOK_PATH.'/src/functions.php');
+        require_once (THEROYALS_CACHE_CLEAR_WEBHOOK_PATH.'/src/functions.php');
     }
 
     /**
@@ -74,8 +74,8 @@ class App
      */
     protected function hooks()
     {
-        register_activation_hook(THEROYALS_JAMSTACK_WEBHOOK_FILE, [$this, 'activation']);
-        register_deactivation_hook(THEROYALS_JAMSTACK_WEBHOOK_FILE, [$this, 'deactivation']);
+        register_activation_hook(THEROYALS_CACHE_CLEAR_WEBHOOK_FILE, [$this, 'activation']);
+        register_deactivation_hook(THEROYALS_CACHE_CLEAR_WEBHOOK_FILE, [$this, 'deactivation']);
 
         SettingsScreen::init();
         Settings::init();

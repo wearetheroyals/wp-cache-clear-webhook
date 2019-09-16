@@ -1,6 +1,6 @@
 (function($, window, document, undefined) {
   $(function() {
-    var image = $(".wp-jamstack-webhook-badge img");
+    var image = $(".wp-cache-clear-webhook-badge img");
     var imageSrc = image.prop("src");
     var refreshTimout = null;
 
@@ -15,13 +15,13 @@
 
     refreshTimout = setTimeout(updateNetlifyBadgeUrl, 15000);
 
-    $(".wp-jamstack-webhook-button").click(function(e) {
+    $(".wp-cache-clear-webhook-button").click(function(e) {
       e.preventDefault();
       $.ajax({
         type: "POST",
         url: wpjd.ajaxurl,
         data: {
-          action: "wp_jamstack_webhook_manual_trigger",
+          action: "wp_cache_clear_webhook_manual_trigger",
           security: wpjd.deployment_button_nonce
         },
         dataType: "json",

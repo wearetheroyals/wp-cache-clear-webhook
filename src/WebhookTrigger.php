@@ -1,6 +1,6 @@
 <?php
 
-namespace Theroyals\JAMstackWebhook;
+namespace Theroyals\CacheClearWebhook;
 
 class WebhookTrigger
 {
@@ -19,7 +19,7 @@ class WebhookTrigger
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueueScripts']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueueScripts']);
 
-        add_action('wp_ajax_wp_jamstack_webhook_manual_trigger', [__CLASS__, 'trigger']);
+        add_action('wp_ajax_wp_cache_clear_webhook_manual_trigger', [__CLASS__, 'trigger']);
     }
 
     /**
@@ -36,20 +36,20 @@ class WebhookTrigger
             return;
         }
 
-        $statuses = apply_filters('jamstack_webhook_post_statuses', ['publish', 'private', 'trash'], $id, $post);
+        $statuses = apply_filters('cache_clear_webhook_post_statuses', ['publish', 'private', 'trash'], $id, $post);
 
         if (!in_array(get_post_status($id), $statuses, true)) {
             return;
         }
 
-        $option = jamstack_webhook_get_options();
-        $post_types = apply_filters('jamstack_webhook_post_types', $option['webhook_post_types'] ?: [], $id, $post);
+        $option = cache_clear_webhook_get_options();
+        $post_types = apply_filters('cache_clear_webhook_post_types', $option['webhook_post_types'] ?: [], $id, $post);
 
         if (!in_array(get_post_type($id), $post_types, true)) {
             return;
         }
 
-        self::fireWebhook();
+        self::fireWebhook($post->post_type, $post->post_name);
     }
 
     /**
@@ -66,7 +66,7 @@ class WebhookTrigger
             return;
         }
 
-        self::fireWebhook();
+        self::fireWebhook($tax_slug, "");
     }
 
     /**
@@ -85,7 +85,7 @@ class WebhookTrigger
             return;
         }
 
-        self::fireWebhook();
+        self::fireWebhook($tax_slug, "");
     }
 
     /**
@@ -102,7 +102,7 @@ class WebhookTrigger
             return;
         }
 
-        self::fireWebhook();
+        self::fireWebhook($tax_slug, "");
     }
 
     /**
@@ -115,8 +115,8 @@ class WebhookTrigger
      */
     protected static function canFireForTaxonomy($id, $tax_id, $tax_slug)
     {
-        $option = jamstack_webhook_get_options();
-        $taxonomies = apply_filters('jamstack_webhook_taxonomies', $option['webhook_taxonomies'] ?: [], $id, $tax_id);
+        $option = cache_clear_webhook_get_options();
+        $taxonomies = apply_filters('cache_clear_webhook_taxonomies', $option['webhook_taxonomies'] ?: [], $id, $tax_id);
 
         return in_array($tax_slug, $taxonomies, true);
     }
@@ -135,22 +135,22 @@ class WebhookTrigger
 
         ?><style>
 
-        #wpadminbar .wp-jamstack-webhook-button > a {
+        #wpadminbar .wp-cache-clear-webhook-button > a {
             background-color: rgba(255, 255, 255, .2) !important;
             color: #FFFFFF !important;
         }
-        #wpadminbar .wp-jamstack-webhook-button > a:hover,
-        #wpadminbar .wp-jamstack-webhook-button > a:focus {
+        #wpadminbar .wp-cache-clear-webhook-button > a:hover,
+        #wpadminbar .wp-cache-clear-webhook-button > a:focus {
             background-color: rgba(255, 255, 255, .25) !important;
         }
 
-        #wpadminbar .wp-jamstack-webhook-button svg {
+        #wpadminbar .wp-cache-clear-webhook-button svg {
             width: 12px;
             height: 12px;
             margin-left: 5px;
         }
 
-        #wpadminbar .wp-jamstack-webhook-badge > .ab-item {
+        #wpadminbar .wp-cache-clear-webhook-badge > .ab-item {
             display: flex;
             align-items: center;
         }
@@ -166,15 +166,15 @@ class WebhookTrigger
     public static function enqueueScripts()
     {
         wp_enqueue_script(
-            'wp-jamstack-webhook-adminbar',
-            THEROYALS_JAMSTACK_WEBHOOK_URL.'/assets/admin.js',
+            'wp-cache-clear-webhook-adminbar',
+            THEROYALS_CACHE_CLEAR_WEBHOOK_URL.'/assets/admin.js',
             ['jquery'],
-            filemtime(THEROYALS_JAMSTACK_WEBHOOK_PATH.'/assets/admin.js')
+            filemtime(THEROYALS_CACHE_CLEAR_WEBHOOK_PATH.'/assets/admin.js')
         );
 
-        $button_nonce = wp_create_nonce('wp-jamstack-webhook-button-nonce');
+        $button_nonce = wp_create_nonce('wp-cache-clear-webhook-button-nonce');
 
-        wp_localize_script('wp-jamstack-webhook-adminbar', 'wpjd', [
+        wp_localize_script('wp-cache-clear-webhook-adminbar', 'wpjd', [
             'ajaxurl' => admin_url('admin-ajax.php'),
             'deployment_button_nonce' => $button_nonce,
         ]);
@@ -182,21 +182,21 @@ class WebhookTrigger
 
     /**
      * Add a "trigger webhook" button to the admin bar
-     * TODO = Fix for CC job
+     *
      * @param object $bar
      * @return void
      */
     public static function adminBarTriggerButton($bar)
     {
-        $option = jamstack_webhook_get_options();
+        $option = cache_clear_webhook_get_options();
 
         $bar->add_node([
-            'id' => 'wp-jamstack-webhook',
-            'title' => 'Trigger Webhook <svg aria-hidden="true" focusable="false" data-icon="upload" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"></path></svg>',
+            'id' => 'wp-cache-clear-webhook',
+            'title' => 'Clear Cache <svg aria-hidden="true" focusable="false" data-icon="upload" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"></path></svg>',
             'parent' => 'top-secondary',
             'href' => 'javascript:void(0)',
             'meta' => [
-                'class' => 'wp-jamstack-webhook-button'
+                'class' => 'wp-cache-clear-webhook-button'
             ]
         ]);
     }
@@ -208,9 +208,9 @@ class WebhookTrigger
      */
     public static function trigger()
     {
-        check_ajax_referer('wp-jamstack-webhook-button-nonce', 'security');
+        check_ajax_referer('wp-cache-clear-webhook-button-nonce', 'security');
 
-        self::fireWebhook();
+        self::fireWebhook("all", "");
 
         echo 1;
         exit;
@@ -221,9 +221,9 @@ class WebhookTrigger
      *
      * @return WP_Error|array
      */
-    public static function fireWebhook()
+    public static function fireWebhook($resource, $name)
     {
-        $webhook = jamstack_webhook_get_webhook_url();
+        $webhook = cache_clear_webhook_get_webhook_url();
 
         if (!$webhook) {
             return;
@@ -233,21 +233,37 @@ class WebhookTrigger
             return;
         }
 
-        $args = apply_filters('jamstack_webhook_webhook_request_args', [
-            'blocking' => false
-        ]);
+        $method = cache_clear_webhook_get_webhook_method();
 
-        $method = jamstack_webhook_get_webhook_method();
-
-        do_action('jamstack_webhook_before_fire_webhook');
+        do_action('cache_clear_webhook_before_fire_webhook');
 
         if ($method === 'get') {
+            $args = array(
+                'headers' => array(
+                    cache_clear_webhook_get_webhook_header() => cache_clear_webhook_get_webhook_key()
+                ),
+            );
+
             $return = wp_safe_remote_get($webhook, $args);
         } else {
-            $return = wp_safe_remote_post($webhook, $args);
+            $body = array(
+                'resource' => $resource,
+                'name' => $name
+            );
+
+            $post_args = array(
+                'headers' => array(
+                    'Content-Type' => 'application/json; charset=utf-8',
+                    cache_clear_webhook_get_webhook_header() => cache_clear_webhook_get_webhook_key()
+                ),
+                'body' => json_encode($body),
+                'data_format' => 'body'
+            );
+
+            $return = wp_safe_remote_post($webhook, $post_args);
         }
 
-        do_action('jamstack_webhook_after_fire_webhook');
+        do_action('cache_clear_webhook_after_fire_webhook');
 
         return $return;
     }
