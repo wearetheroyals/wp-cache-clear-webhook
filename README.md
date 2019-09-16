@@ -1,10 +1,12 @@
 # Cache Clear Webhooks
 
-A WordPress plugin for cache clear webhooks in services such as Varnish.
+Original codebase forked from [WP JAMstack Deployments](https://github.com/crgeary/wp-jamstack-deployments) by [crgeary](https://github.com/crgeary)
+
+A WordPress plugin for firing a cache clear webhook for services such as Varnish or your own custom caching engine.
 
 ## Description
 
-This plugin provides a way to fire off a request to a webhook when a post, page or custom post type has been created, udpated or deleted. You're also able to fire off a request manually at the click of a button, or programmatically via a WordPress action.
+This plugin provides a way to fire off a request to a webhook when a post, page or custom post type has been created, updated or deleted. You're also able to fire off a request manually at the click of a button, or programmatically via a WordPress action.
 
 ## Screenshots
 
@@ -12,17 +14,19 @@ This plugin provides a way to fire off a request to a webhook when a post, page 
 
 ## Installing the Plugin
 
-Clone the contents of this repository to your WordPress plugins folder and activate the plugin via the installed plugins page.
+Clone the contents of this repository to your WordPress plugins folder, or 'Download ZIP' to upload through the WordPress UI then activate the plugin via the installed plugins page.
 
 ## Configuration
 
-The plugin attempts to trigger builds when you update your content, and has settings that you can use to define what post types & taxonomies should be monitored.
+The plugin attempts to trigger a webhook for remote cache clear when you update your content, and has settings that you can use to define what post types & taxonomies should be monitored.
 
 You can access the plugin's settings in WordPress by accessing the 'Settings' panel on the left hand side of the dashboard and then clicking 'Cache Clear Webhooks'.
 
 From this screen you can configure the following:
 
-- **Webhook URL** - The webhook URL that you have created to trigger a deployment. For more information on webhooks with Netlify [visit the Netlify documentation](https://www.netlify.com/docs/webhooks/).
+- **Webhook URL** - The webhook URL that you have created to trigger the cache clear.
+- **Webhook Header** - The header used to hold the webhook secret key. Defaults to `X-CACHE-CLEAR`
+- **Webhook Secret Key** - The secret key used to authenticate you against the cache clear webhook endpoint.
 - **Webhook Method** - This is the required method for the webhook request. The available options are `GET` or `POST`. By default the plugin will automatically select `POST`.
 - **Post Types** - A list of selectable post types that will trigger a webhook when created, updated or deleted. Note that only selected post types will trigger a deployment.
 - **Taxonomies** - A list of selectable taxonomies that will trigger a webhook when created, updated or deleted. Note that only selected taxonomies will trigger a deployment.
